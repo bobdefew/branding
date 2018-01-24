@@ -16,6 +16,46 @@
   } ],
   "paths" : {
     "/styles" : {
+      "get" : {
+        "summary" : "get all branding styles",
+        "description" : "Get all branding styles, deleted or not.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pgstart",
+          "in" : "query",
+          "required" : false,
+          "type" : "number",
+          "description" : "Initial item/offset; negative numbers start from the end backwards (e.g. pgstart=-10&pglen=-1 would give the last 10 items).",
+          "default" : 0.0,
+          "x-example" : 0.0
+        }, {
+          "name" : "pglen",
+          "in" : "query",
+          "required" : false,
+          "type" : "number",
+          "description" : "The number of items to return in the page; a length of -1 means return all items.",
+          "default" : 10.0,
+          "x-example" : 100.0
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "get operation successful.",
+            "schema" : {
+              "required" : [ "brandingStyles" ],
+              "type" : "object",
+              "properties" : {
+                "brandingStyles" : {
+                  "type" : "array",
+                  "description" : "Array of BrandingStyle objects.",
+                  "items" : {
+                    "$ref" : "#/definitions/BrandingStyle"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post" : {
         "summary" : "Create a new BrandingStyle",
         "consumes" : [ "application/json" ],
@@ -38,11 +78,34 @@
         }
       }
     },
-    "/styles/{brandingStyleId}" : {
+    "/styles/{id}" : {
       "get" : {
         "summary" : "Get exising BrandingStyle",
         "produces" : [ "application/json" ],
-        "parameters" : [ ],
+        "parameters" : [ {
+          "name" : "pgstart",
+          "in" : "query",
+          "required" : false,
+          "type" : "number",
+          "description" : "Initial item/offset; negative numbers start from the end backwards (e.g. pgstart=-10&pglen=-1 would give the last 10 items).",
+          "default" : 0.0,
+          "x-example" : 0.0
+        }, {
+          "name" : "pglen",
+          "in" : "query",
+          "required" : false,
+          "type" : "number",
+          "description" : "The number of items to return in the page; a length of -1 means return all items.",
+          "default" : 10.0,
+          "x-example" : 100.0
+        }, {
+          "name" : "showDeleted",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "description" : "Set this to true to show deleted entries.",
+          "default" : false
+        } ],
         "responses" : {
           "200" : {
             "description" : "Status 200",
@@ -54,15 +117,23 @@
       },
       "put" : {
         "summary" : "Update existing BrandingStyle",
-        "parameters" : [ ],
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/BrandingStyle"
+          }
+        } ],
         "responses" : {
           "200" : {
-            "description" : "Status 200"
+            "description" : "Update successful."
           }
         }
       },
       "delete" : {
-        "summary" : "Delete existing BrandingStyle",
+        "summary" : "Soft delete of the existing BrandingStyle",
         "parameters" : [ ],
         "responses" : {
           "200" : {
@@ -71,13 +142,13 @@
         }
       },
       "parameters" : [ {
-        "name" : "brandingStyleId",
+        "name" : "id",
         "in" : "path",
         "required" : true,
         "type" : "string"
       } ]
     },
-    "/styles/{brandingStyleId}/logo" : {
+    "/styles/{id}/logo" : {
       "post" : {
         "summary" : "Set logo for BrandingStyle",
         "consumes" : [ "multipart/form-data" ],
@@ -96,18 +167,18 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Status 200"
+            "description" : "Logo file uploaded successfully."
           }
         }
       },
       "parameters" : [ {
-        "name" : "brandingStyleId",
+        "name" : "id",
         "in" : "path",
         "required" : true,
         "type" : "string"
       } ]
     },
-    "/styles/{brandingStyleId}/css" : {
+    "/styles/{id}/css" : {
       "put" : {
         "summary" : "Update the css for existing BrandingStyle",
         "consumes" : [ "application/json" ],
@@ -127,39 +198,41 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "Status 200"
+            "description" : "BrandingStyle CSS updated successfully."
           }
         }
       },
       "parameters" : [ {
-        "name" : "brandingStyleId",
+        "name" : "id",
         "in" : "path",
         "required" : true,
         "type" : "string"
       } ]
     },
-    "/css/{brandingStylelId}" : {
+    "/styles/{id}/url" : {
       "get" : {
-        "summary" : "Return CSS content",
-        "description" : "Return the CSS content for this branding style.",
-        "produces" : [ "text/css" ],
+        "summary" : "Return CSS CDN URL",
+        "description" : "Return the CSS CDN URL.",
+        "produces" : [ "application/json" ],
         "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Return the css content for the BrandingStyle",
             "schema" : {
-              "type" : "string",
-              "description" : "Return CSS content"
-            },
-            "examples" : {
-              "text/css" : "body : {color: red}"
+              "type" : "object",
+              "properties" : {
+                "url" : {
+                  "type" : "string",
+                  "description" : "Returns CSS CDN URL or null if there is no valid css."
+                }
+              }
             }
           }
         },
         "security" : [ ]
       },
       "parameters" : [ {
-        "name" : "brandingStylelId",
+        "name" : "id",
         "in" : "path",
         "required" : true,
         "type" : "string"
@@ -211,7 +284,7 @@
     },
     "BrandingStyle" : {
       "type" : "object",
-      "required" : [ "_id", "css", "deleted", "name" ],
+      "required" : [ "name" ],
       "properties" : {
         "_id" : {
           "type" : "string",
@@ -223,16 +296,8 @@
         "desc" : {
           "type" : "string"
         },
-        "css" : {
+        "cssURL" : {
           "type" : "string"
-        },
-        "logoId" : {
-          "type" : "string",
-          "description" : "UUID of the logo file associated with this BrandingStyle."
-        },
-        "logoVersion" : {
-          "type" : "string",
-          "description" : "UUID Version of the logo file."
         },
         "created" : {
           "type" : "string",
@@ -253,7 +318,7 @@
           "default" : false
         }
       },
-      "example" : "{\n    \"_id\": \"d1861092-a2ce-431c-880a-480d00d667b6\"\n    \"name\": \"Customer A Branding\",\n    \"desc\": \"Custom branding for Customer A\",\n    \"css\": \"body: {color: #235410}\",\n    \"logoId\": \"d1861092-a2ce-431c-880a-480d00d667b\",\n    \"logoVersion\": \"LATEST\",\n    \"created\": \"2014-03-30T11:23:01.000Z\",\n    \"createdBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"modified\": \"2014-03-30T11:23:01.000Z\",\n    \"modifiedBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"deleted\": false\n}"
+      "example" : "{\n    \"_id\": \"d1861092-a2ce-431c-880a-480d00d667b6\"\n    \"name\": \"Customer A Branding\",\n    \"desc\": \"Custom branding for Customer A\",\n    \"cssURL\": \"https://pf2.performancefit.com/...}\",\n    \"created\": \"2014-03-30T11:23:01.000Z\",\n    \"createdBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"modified\": \"2014-03-30T11:23:01.000Z\",\n    \"modifiedBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"deleted\": false\n}"
     }
   }
 }
