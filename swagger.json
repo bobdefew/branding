@@ -1,0 +1,259 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "The branding service.",
+    "version" : "1.0.0",
+    "title" : "Branding",
+    "contact" : { }
+  },
+  "host" : "pf2.performancefit.com",
+  "basePath" : "/branding/v1",
+  "schemes" : [ "https" ],
+  "consumes" : [ "application/json", "multipart/form-data" ],
+  "produces" : [ "application/json", "multipart/form-data" ],
+  "security" : [ {
+    "JWT" : [ ]
+  } ],
+  "paths" : {
+    "/styles" : {
+      "post" : {
+        "summary" : "Create a new BrandingStyle",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/BrandingStyle"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/BrandingStyle"
+            }
+          }
+        }
+      }
+    },
+    "/styles/{brandingStyleId}" : {
+      "get" : {
+        "summary" : "Get exising BrandingStyle",
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200",
+            "schema" : {
+              "$ref" : "#/definitions/BrandingStyle"
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "Update existing BrandingStyle",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "Delete existing BrandingStyle",
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "brandingStyleId",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    },
+    "/styles/{brandingStyleId}/logo" : {
+      "post" : {
+        "summary" : "Set logo for BrandingStyle",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "width",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "description" : "logo image max width"
+        }, {
+          "name" : "height",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "description" : "logo image max height"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "brandingStyleId",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    },
+    "/styles/{brandingStyleId}/css" : {
+      "put" : {
+        "summary" : "Update the css for existing BrandingStyle",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "required" : [ "css" ],
+            "properties" : {
+              "css" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Status 200"
+          }
+        }
+      },
+      "parameters" : [ {
+        "name" : "brandingStyleId",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    },
+    "/css/{brandingStylelId}" : {
+      "get" : {
+        "summary" : "Return CSS content",
+        "description" : "Return the CSS content for this branding style.",
+        "produces" : [ "text/css" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Return the css content for the BrandingStyle",
+            "schema" : {
+              "type" : "string",
+              "description" : "Return CSS content"
+            },
+            "examples" : {
+              "text/css" : "body : {color: red}"
+            }
+          }
+        },
+        "security" : [ ]
+      },
+      "parameters" : [ {
+        "name" : "brandingStylelId",
+        "in" : "path",
+        "required" : true,
+        "type" : "string"
+      } ]
+    }
+  },
+  "securityDefinitions" : {
+    "JWT" : {
+      "description" : "JSON Web Token (JWT) sent either as a cookie or in the Authorization header as a bearer token",
+      "type" : "apiKey",
+      "name" : "Authorization",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "Error" : {
+      "type" : "object",
+      "required" : [ "errors" ],
+      "properties" : {
+        "errors" : {
+          "type" : "array",
+          "description" : "This must contain one or more errors in the errors array.",
+          "items" : {
+            "required" : [ "code" ],
+            "type" : "object",
+            "properties" : {
+              "code" : {
+                "type" : "string",
+                "description" : "See examples for documentation on each specific error message.",
+                "enum" : [ "PFERR-CDN-001", "PFERR-CDN-002" ]
+              },
+              "desc" : {
+                "type" : "string",
+                "description" : "Describes the error code for debugging purposes. This will not be returned in production environments. See examples for documentation on each specific error message."
+              },
+              "fields" : {
+                "type" : "array",
+                "description" : "All fields that failed validation.",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "description" : "Defines a standard error response object.",
+      "example" : "{\n    \"errors\": [\n        {\"code\":\"PFERR-ALL-001\", \"desc\":\"Fields values are invalid or missing.\", \"fields\":[]},\n        {\"code\":\"PFERR-CDN-001\", \"desc\":\"description of error 001\"},\n        {\"code\":\"PFERR-CDN-002\", \"desc\":\"description of error 002\"}\n    ]\n}"
+    },
+    "BrandingStyle" : {
+      "type" : "object",
+      "required" : [ "_id", "css", "deleted", "name" ],
+      "properties" : {
+        "_id" : {
+          "type" : "string",
+          "description" : "UUID"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "desc" : {
+          "type" : "string"
+        },
+        "css" : {
+          "type" : "string"
+        },
+        "logoId" : {
+          "type" : "string",
+          "description" : "UUID of the logo file associated with this BrandingStyle."
+        },
+        "logoVersion" : {
+          "type" : "string",
+          "description" : "UUID Version of the logo file."
+        },
+        "created" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "createdBy" : {
+          "type" : "string"
+        },
+        "modified" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "modifiedBy" : {
+          "type" : "string"
+        },
+        "deleted" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      },
+      "example" : "{\n    \"_id\": \"d1861092-a2ce-431c-880a-480d00d667b6\"\n    \"name\": \"Customer A Branding\",\n    \"desc\": \"Custom branding for Customer A\",\n    \"css\": \"body: {color: #235410}\",\n    \"logoId\": \"d1861092-a2ce-431c-880a-480d00d667b\",\n    \"logoVersion\": \"LATEST\",\n    \"created\": \"2014-03-30T11:23:01.000Z\",\n    \"createdBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"modified\": \"2014-03-30T11:23:01.000Z\",\n    \"modifiedBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"deleted\": false\n}"
+    }
+  }
+}
