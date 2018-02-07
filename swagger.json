@@ -6,8 +6,7 @@
     "title" : "Branding",
     "contact" : { }
   },
-  "host" : "pf2.performancefit.com",
-  "basePath" : "/branding/v1",
+  "host" : "c89h8o7.restletmocks.net",
   "schemes" : [ "https" ],
   "consumes" : [ "application/json", "multipart/form-data" ],
   "produces" : [ "application/json", "multipart/form-data" ],
@@ -18,7 +17,7 @@
     "/styles" : {
       "get" : {
         "summary" : "get all branding styles",
-        "description" : "Get all branding styles.",
+        "description" : "Requires the role BRANDING_READ.\n",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "pgstart",
@@ -48,23 +47,30 @@
           "200" : {
             "description" : "get operation successful.",
             "schema" : {
-              "required" : [ "brandingStyles" ],
               "type" : "object",
               "properties" : {
-                "brandingStyles" : {
+                "results" : {
                   "type" : "array",
                   "description" : "Array of BrandingStyle objects. The array will be empty if there are no BrandingStyles.",
                   "items" : {
                     "$ref" : "#/definitions/BrandingStyle"
                   }
                 }
-              }
+              },
+              "required" : [ "results" ]
+            }
+          },
+          "400" : {
+            "description" : "Status 400",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
             }
           }
         }
       },
       "post" : {
         "summary" : "Create a new BrandingStyle",
+        "description" : "Requires the role BRANDING_WRITE.",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -81,6 +87,12 @@
             "schema" : {
               "$ref" : "#/definitions/BrandingStyle"
             }
+          },
+          "400" : {
+            "description" : "Status 400",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
           }
         }
       }
@@ -88,6 +100,7 @@
     "/styles/{id}" : {
       "get" : {
         "summary" : "Get exising BrandingStyle",
+        "description" : "Requires the role BRANDING_READ.",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "showDeleted",
@@ -108,6 +121,7 @@
       },
       "put" : {
         "summary" : "Update existing BrandingStyle",
+        "description" : "Requires the role BRANDING_WRITE.",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -124,25 +138,32 @@
             "schema" : {
               "$ref" : "#/definitions/BrandingStyle"
             }
+          },
+          "400" : {
+            "description" : "Status 400",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
           }
         }
       },
       "delete" : {
         "summary" : "Soft delete of the existing BrandingStyle",
+        "description" : "Requires the role BRANDING_DELETE.",
         "produces" : [ "application/json" ],
         "parameters" : [ ],
         "responses" : {
           "200" : {
             "description" : "Delete successful.",
             "schema" : {
-              "required" : [ "result" ],
               "type" : "object",
               "properties" : {
                 "result" : {
                   "type" : "string",
                   "enum" : [ "SUCCESS" ]
                 }
-              }
+              },
+              "required" : [ "result" ]
             }
           }
         }
@@ -157,6 +178,7 @@
     "/styles/{id}/logo" : {
       "post" : {
         "summary" : "Set logo for BrandingStyle",
+        "description" : "Requires the role BRANDING_WRITE.",
         "consumes" : [ "multipart/form-data" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -191,7 +213,9 @@
     "/styles/{id}/css" : {
       "put" : {
         "summary" : "Update the css for existing BrandingStyle",
+        "description" : "Requires the role BRANDING_WRITE.",
         "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "body",
           "in" : "body",
@@ -208,7 +232,16 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "BrandingStyle CSS updated successfully."
+            "description" : "BrandingStyle CSS updated successfully.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "result" : {
+                  "type" : "string",
+                  "enum" : [ "SUCCESS" ]
+                }
+              }
+            }
           }
         }
       },
@@ -222,7 +255,7 @@
     "/styles/{id}/url" : {
       "get" : {
         "summary" : "Return CSS CDN URL",
-        "description" : "Return the CSS CDN URL.",
+        "description" : "Return the CSS CDN URL.\n\nRequires the role BRANDING_READ.",
         "produces" : [ "application/json" ],
         "parameters" : [ ],
         "responses" : {
@@ -266,13 +299,12 @@
           "type" : "array",
           "description" : "This must contain one or more errors in the errors array.",
           "items" : {
-            "required" : [ "code" ],
             "type" : "object",
             "properties" : {
               "code" : {
                 "type" : "string",
                 "description" : "See examples for documentation on each specific error message.",
-                "enum" : [ "PFERR-CDN-001", "PFERR-CDN-002" ]
+                "enum" : [ "PFERR-BRN-001" ]
               },
               "desc" : {
                 "type" : "string",
@@ -285,12 +317,13 @@
                   "type" : "string"
                 }
               }
-            }
+            },
+            "required" : [ "code" ]
           }
         }
       },
       "description" : "Defines a standard error response object.",
-      "example" : "{\n    \"errors\": [\n        {\"code\":\"PFERR-ALL-001\", \"desc\":\"Fields values are invalid or missing.\", \"fields\":[]},\n        {\"code\":\"PFERR-CDN-001\", \"desc\":\"description of error 001\"},\n        {\"code\":\"PFERR-CDN-002\", \"desc\":\"description of error 002\"}\n    ]\n}"
+      "example" : "{\n    \"errors\": [\n        {\"code\":\"PFERR-ALL-001\", \"desc\":\"Fields values are invalid or missing.\", \"fields\":[]},\n        {\"code\":\"PFERR-BRN-001\", \"desc\":\" pgstart or pglen query parameters out of range.\"},\n    ]\n}"
     },
     "BrandingStyle" : {
       "type" : "object",
@@ -328,7 +361,11 @@
           "default" : false
         }
       },
-      "example" : "{\n    \"_id\": \"d1861092-a2ce-431c-880a-480d00d667b6\"\n    \"name\": \"Customer A Branding\",\n    \"desc\": \"Custom branding for Customer A\",\n    \"cssURL\": \"https://pf2.performancefit.com/...}\",\n    \"created\": \"2014-03-30T11:23:01.000Z\",\n    \"createdBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"modified\": \"2014-03-30T11:23:01.000Z\",\n    \"modifiedBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"deleted\": false\n}"
+      "example" : "{\n    \"_id\": \"d1861092-a2ce-431c-880a-480d00d667b6\",\n    \"name\": \"Customer A Branding\",\n    \"desc\": \"Custom branding for Customer A\",\n    \"cssURL\": \"https://pf2.performancefit.com/...}\",\n    \"created\": \"2014-03-30T11:23:01.000Z\",\n    \"createdBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"modified\": \"2014-03-30T11:23:01.000Z\",\n    \"modifiedBy\": \"a33567bd-6ef7-40fa-9337-a53db6f38e94\",\n    \"deleted\": false\n}"
+    },
+    "Role" : {
+      "type" : "string",
+      "enum" : [ "BRANDING_READ", "BRANDING_WRITE", "BRANDING_DELETE" ]
     }
   }
 }
