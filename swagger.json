@@ -47,6 +47,7 @@
           "200" : {
             "description" : "get operation successful.",
             "schema" : {
+              "required" : [ "results" ],
               "type" : "object",
               "properties" : {
                 "results" : {
@@ -56,8 +57,7 @@
                     "$ref" : "#/definitions/BrandingStyle"
                   }
                 }
-              },
-              "required" : [ "results" ]
+              }
             }
           },
           "400" : {
@@ -156,14 +156,14 @@
           "200" : {
             "description" : "Delete successful.",
             "schema" : {
+              "required" : [ "result" ],
               "type" : "object",
               "properties" : {
                 "result" : {
                   "type" : "string",
                   "enum" : [ "SUCCESS" ]
                 }
-              },
-              "required" : [ "result" ]
+              }
             }
           }
         }
@@ -211,6 +211,17 @@
       } ]
     },
     "/styles/{id}/css" : {
+      "get" : {
+        "summary" : "Return CSS CDN URL",
+        "description" : "Looks up the CSS file based on the branding ID and redirects to the public URL of the file.",
+        "parameters" : [ ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirects to the CDN's CSS file"
+          }
+        },
+        "security" : [ ]
+      },
       "put" : {
         "summary" : "Update the css for existing BrandingStyle",
         "description" : "Requires the role BRANDING_WRITE.",
@@ -253,27 +264,6 @@
       } ]
     },
     "/styles/{id}/url" : {
-      "get" : {
-        "summary" : "Return CSS CDN URL",
-        "description" : "Return the CSS CDN URL.\n\nRequires the role BRANDING_READ.",
-        "produces" : [ "application/json" ],
-        "parameters" : [ ],
-        "responses" : {
-          "200" : {
-            "description" : "Return the css content for the BrandingStyle",
-            "schema" : {
-              "type" : "object",
-              "properties" : {
-                "url" : {
-                  "type" : "string",
-                  "description" : "Returns CSS CDN URL or null if there is no valid css."
-                }
-              }
-            }
-          }
-        },
-        "security" : [ ]
-      },
       "parameters" : [ {
         "name" : "id",
         "in" : "path",
@@ -299,6 +289,7 @@
           "type" : "array",
           "description" : "This must contain one or more errors in the errors array.",
           "items" : {
+            "required" : [ "code" ],
             "type" : "object",
             "properties" : {
               "code" : {
@@ -317,8 +308,7 @@
                   "type" : "string"
                 }
               }
-            },
-            "required" : [ "code" ]
+            }
           }
         }
       },
